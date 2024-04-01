@@ -15,14 +15,11 @@ class PShellFunction:
         Запуск процесса вызова функции в PowerShell скрипте через консоль.
         """
         return subprocess.run(
-                    [
-                        'powershell.exe',
-                        f". \"{self.source}\";",
-                        f"&{self.name} {self.input_}"
-                        ],
-                    capture_output=True,
-                    text=True
-                )
+            ["powershell.exe", f'. "{self.source}";', f"&{self.name} {self.input_}"],
+            capture_output=True,
+            text=True,
+        )
+
 
 @dataclass
 class CredentialToClixml(PShellFunction):
@@ -31,5 +28,5 @@ class CredentialToClixml(PShellFunction):
     username: str
 
     def __post_init__(self) -> None:
-        self.name = 'Do-Main'
+        self.name = "Do-Main"
         self.input_ = f"'{self.export_path}' '{self.prompt_message}' '{self.username}'"
