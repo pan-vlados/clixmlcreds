@@ -18,43 +18,43 @@ class TestCredentials(unittest.TestCase):
     prompt_message: str = 'Test prompt message:'
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         CredentialManager.path = Path(__file__).absolute().parent
 
-    def setUp(self):
+    def setUp(self) -> None:
         if not Credential.exists(name=self.cred_name):
             write_credential_for_test()
         self.credential: Credential = CredentialManager.read(
             cred_name=self.cred_name
         )
 
-    def test_write(self):
+    def test_write(self) -> None:
         write_credential_for_test()
-        self.assertTrue(Credential.exists(name=self.cred_name))
+        assert Credential.exists(name=self.cred_name)
 
-    def test_read(self):
+    def test_read(self) -> None:
         credential: Credential = CredentialManager.read(
             cred_name=self.cred_name
         )
-        self.assertEqual(credential.username, self.username)
+        assert credential.username == self.username
 
-    def test_get_password(self):
+    def test_get_password(self) -> None:
         password = self.credential.get_password()
         decrypted_password, _ = CredentialManager.decrypt(
             password=self.credential.password
         )
-        self.assertEqual(password, decrypted_password)
+        assert password == decrypted_password
 
-    def test_encrypt_decrypt(self):
+    def test_encrypt_decrypt(self) -> None:
         password = self.credential.get_password()
         encrypted_password = CredentialManager.encrypt(password=password)
         decrypted_password, _ = CredentialManager.decrypt(
             password=encrypted_password
         )
-        self.assertEqual(password, decrypted_password)
+        assert password == decrypted_password
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         Path(CredentialManager.get_xml_path(cred_name=cls.cred_name)).unlink()
 
 
