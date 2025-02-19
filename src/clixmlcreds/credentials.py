@@ -1,7 +1,7 @@
 import binascii
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, ClassVar, Optional, Tuple, Union
+from typing import Any, ClassVar, Generic, Optional, Tuple, TypeVar
 
 import win32crypt
 
@@ -9,27 +9,28 @@ from .errors import InvalidCredentialError, PasswordTypeError
 from .utils import CredentialToClixml
 
 
+_Tpwd = TypeVar('_Tpwd', str, bytes)
+
+
 @dataclass
-class Credential:
+class Credential(Generic[_Tpwd]):
     name: str
     username: str
-    password: Union[bytes, str]
+    password: _Tpwd
 
     def get_password(self) -> str:
         """UNSECURE!
         Return decrypted string representation of password.
         """
-        password = self.password
-        if isinstance(password, bytes):
-            password, _ = CredentialManager.decrypt(password=password)
-        elif not isinstance(password, str):
+        if not isinstance(self.password, bytes):
             raise PasswordTypeError
+        password, _ = CredentialManager.decrypt(password=self.password)
         return password
 
     @staticmethod
     def exists(name: str) -> bool:
         """Check if Credential with scpecified name exists in CredentialManager path."""
-        return Path(CredentialManager.get_xml_path(cred_name=name)).exists()
+        return CredentialManager.get_xml_path(cred_name=name).exists()
 
 
 class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-data-protection-api-with-python-for-handling-credentials-5d4j
@@ -67,15 +68,14 @@ class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-dat
         desc, password = win32crypt.CryptUnprotectData(
             password, entropy, None, ps, flags
         )
-        password_: str = password.decode(cls.encoding)
-        return password_, desc
+        return password.decode(cls.encoding), desc
 
     @classmethod
-    def get_xml_path(cls, cred_name: str) -> str:
-        return str(cls.path / f'{cred_name}.xml')
+    def get_xml_path(cls, cred_name: str) -> Path:
+        return cls.path / f'{cred_name}.xml'
 
     @classmethod
-    def read(cls, cred_name: str) -> 'Credential':
+    def read(cls, cred_name: str) -> 'Credential[bytes]':
         """Read user's credential (Import-Clixml PowerShell command).
         Credentials still will be secured using Windows Data Protection API.
         """
@@ -104,7 +104,7 @@ class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-dat
         using Windows Data Protection API (Export-Clixml PowerShell command).
         """
         process = CredentialToClixml(
-            source=str(cls.cred_to_xml_script_path),
+            source=cls.cred_to_xml_script_path,
             export_path=cls.get_xml_path(cred_name=cred_name),
             prompt_message=prompt_message,
             username=username,

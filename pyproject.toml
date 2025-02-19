@@ -88,7 +88,8 @@ known-local-folder = ["whole_app"]
 "tests/*.py" = ["ANN401", "S101", "S311", "E402"]
 
 [tool.mypy]
-files='src/*'
+files = 'src/*'
+exclude = "tests/*"
 ignore_missing_imports = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

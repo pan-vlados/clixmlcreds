@@ -55,7 +55,7 @@ class TestCredentials(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        Path(CredentialManager.get_xml_path(cred_name=cls.cred_name)).unlink()
+        CredentialManager.get_xml_path(cred_name=cls.cred_name).unlink()
 
 
 if __name__ == '__main__':

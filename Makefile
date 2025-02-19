@@ -25,9 +25,9 @@ test: venv tests
 mypy-check: venv pyproject.toml src/$(package)
 	@$(PYTHON) -m mypy $(word 3,$^)/*.py
 ruff-check: venv pyproject.toml src/$(package)
-	@$(PYTHON) -m ruff check (word 3,$^)/*
+	@$(PYTHON) -m ruff check $(word 3,$^)/*.py
 ruff-fix: venv pyproject.toml src/$(package)
-	@$(PYTHON) -m ruff check --fix (word 3,$^)/*
+	@$(PYTHON) -m ruff check --fix $(word 3,$^)/*.py
 
 build: venv pyproject.toml src/$(package)
 	@$(PIP) install build twine
