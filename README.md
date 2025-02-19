@@ -9,7 +9,11 @@
 
 Simple solution to call Windows prompt for credentials through PowerShell command Get-Credential. Result of command above will be exported in xml using Windows Data Protection API (Export-Clixml PowerShell command).
 
-Allow you to store your credentials and reuse it in scripts by `CredentialManager.read(...)`.
+<p align="center">
+  <img src="./image.png">
+</p>
+
+You can store your credentials and reuse it in scripts by `CredentialManager.read(...)`.
 
 Very handy when you just need to store credentials for different services and call them based on different `<cred_name>`.
 
