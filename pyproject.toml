@@ -92,7 +92,7 @@ known-local-folder = ["whole_app"]
 
 [tool.mypy]
 files = 'src/*'
-exclude = "tests/*"
+exclude = ["tests/*", "venv"]
 ignore_missing_imports = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true

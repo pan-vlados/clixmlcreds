@@ -1,4 +1,5 @@
 import binascii
+import stat
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar, Generic, Optional, Tuple, TypeVar
@@ -102,7 +103,22 @@ class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-dat
         """Simple solution to call Windows prompt for credentials through PowerShell
         command Get-Credential. Result of command above will be exported in xml
         using Windows Data Protection API (Export-Clixml PowerShell command).
+
+        The default `secrets` storage is the corresponding [folder](src/clixmlcreds/secrets)
+        inside the package. All credentials are hashed and stored in this folder as a
+        `<cred_name>.xml` file. You can change this behavior using:
+        ```python
+        from pathlib import Path
+        from clixmlcreds import CredentialManager
+
+
+        CredentialManager.path = Path('your_own_secrets_storage_folder')
+        ```
         """
+        if (
+            not cls.path.exists()
+        ):  # make sure that CredentialManager folder exists
+            cls.path.mkdir(mode=stat.S_IRWXU, parents=False, exist_ok=True)
         process = CredentialToClixml(
             source=cls.cred_to_xml_script_path,
             export_path=cls.get_xml_path(cred_name=cred_name),
