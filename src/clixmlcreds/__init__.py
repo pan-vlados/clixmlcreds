@@ -1,4 +1,4 @@
-from .credentials import CredentialManager, Credential
+from .credentials import Credential, CredentialManager
 
 
-__all__ = ("CredentialManager", "Credential")
+__all__ = ('Credential', 'CredentialManager')
