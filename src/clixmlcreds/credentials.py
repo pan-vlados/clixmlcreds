@@ -83,8 +83,8 @@ class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-dat
         desc, password = win32crypt.CryptUnprotectData(
             password, entropy, None, ps, flags
         )
-        password: str = password.decode(cls.encoding)
-        return password, desc
+        password_: str = password.decode(cls.encoding)
+        return password_, desc
 
     @classmethod
     def get_xml_path(cls, cred_name: str) -> str:
@@ -104,8 +104,8 @@ class CredentialManager:  # thanks to https://dev.to/samklingdev/use-windows-dat
             username: str = xml.split('<S N="UserName">')[1].split("</S>")[0]
             password: str = xml.split('<SS N="Password">')[1].split("</SS>")[0]
             # Return the binary string that is represented by any hexadecimal string.
-            password: bytes = binascii.unhexlify(password)
-            return Credential(name=cred_name, username=username, password=password)
+            password_: bytes = binascii.unhexlify(password)
+            return Credential(name=cred_name, username=username, password=password_)
 
     @classmethod
     def write(
